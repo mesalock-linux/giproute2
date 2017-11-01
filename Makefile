@@ -1,0 +1,3 @@
+all:
+	go get -d ./...
+	go build -o ip
