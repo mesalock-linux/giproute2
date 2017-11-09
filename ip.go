@@ -12,20 +12,47 @@ func main() {
 
 Usage:
   ip link show
-  ip route <show|list>
+  ip link set <ifname> (up | down)
   ip address add <ifaddr> dev <ifname>
-  ip route add default via <default_gateway> dev <ifname>`
+  ip route (show | list)
+  ip route add <dst> dev <ifname> [via <gateway>] [src <src>]`
 
     args, _ := docopt.Parse(usage, nil, true, "giproute2 0.0.1", false)
     if args["link"] == true {
-        linkShow()
+        if args["show"] == true {
+            linkShow()
+        } else if args["set"] == true {
+            if args["up"] == true {
+                linkSetUp(args["<ifname>"].(string))
+            } else if args["down"] == true {
+                linkSetDown(args["<ifname>"].(string))
+            }
+        }
     } else if args["address"] == true {
         if args["add"] == true {
             addrAdd(args["<ifaddr>"].(string), args["<ifname>"].(string))
         }
     } else if args["route"] == true {
         if args["add"] == true {
-            routeAdd(args["<default_gateway>"].(string), args["<ifname>"].(string))
+            dst := ""
+            if args["<dst>"] != nil {
+                dst = args["<dst>"].(string)
+            }
+
+            gateway := ""
+            if args["<gateway>"] != nil {
+                gateway = args["<gateway>"].(string)
+            }
+            ifname := ""
+            if args["<ifname>"] != nil {
+                ifname = args["<ifname>"].(string)
+            }
+
+            src := ""
+            if args["<src>"] != nil {
+                src = args["<src>"].(string)
+            }
+            routeAdd(dst, gateway, ifname, src)
         } else {
             routeShow()
         }
@@ -58,12 +85,36 @@ func routeShow() {
     }
 }
 
-func routeAdd(defaultGateway string, ifname string) {
-    link, _ := netlink.LinkByName(ifname)
-    defaultGatewayIP := net.ParseIP(defaultGateway)
-    route := netlink.Route{LinkIndex: link.Attrs().Index, Gw: defaultGatewayIP}
-    err := netlink.RouteAdd(&route)
+func routeAdd(dst string, gateway string, ifname string, src string) {
+    link, err := netlink.LinkByName(ifname)
     if err != nil {
         fmt.Println(err)
     }
+    route := netlink.Route{LinkIndex: link.Attrs().Index}
+    if dst != "default" {
+        dstAddr, _ := netlink.ParseAddr(dst)
+        route.Dst = dstAddr.IPNet
+    }
+    if src != "" {
+        srcIP := net.ParseIP(src)
+        route.Src = srcIP
+    }
+    if gateway != "" {
+        gatewayIP := net.ParseIP(gateway)
+        route.Gw = gatewayIP
+    }
+    err = netlink.RouteAdd(&route)
+    if err != nil {
+        fmt.Println(err)
+    }
+}
+
+func linkSetUp(ifname string) {
+    link, _ := netlink.LinkByName(ifname)
+    netlink.LinkSetUp(link)
+}
+
+func linkSetDown(ifname string) {
+    link, _ := netlink.LinkByName(ifname)
+    netlink.LinkSetDown(link)
 }
