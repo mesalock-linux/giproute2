@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-    usage := `giproute2.
+    usage := `giproute2 is a iproute2 rewritten in Go.
 
 Usage:
   ip link show
