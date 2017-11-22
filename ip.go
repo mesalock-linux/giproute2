@@ -60,23 +60,35 @@ Usage:
 }
 
 func linkShow() {
-    links, _ := netlink.LinkList()
+    links, err := netlink.LinkList()
+    if err != nil {
+        fmt.Println(err)
+    }
     for _, link := range links {
         fmt.Println(link.Attrs())
     }
 }
 
 func addrAdd(ifaddr string, ifname string) {
-    link, _ := netlink.LinkByName(ifname)
-    addr, _ := netlink.ParseAddr(ifaddr)
-    err := netlink.AddrAdd(link, addr)
+    link, err := netlink.LinkByName(ifname)
+    if err != nil {
+        fmt.Println(err)
+    }
+    addr, err := netlink.ParseAddr(ifaddr)
+    if err != nil {
+        fmt.Println(err)
+    }
+    err = netlink.AddrAdd(link, addr)
     if err != nil {
         fmt.Println(err)
     }
 }
 
 func routeShow() {
-    links, _ := netlink.LinkList()
+    links, err := netlink.LinkList()
+    if err != nil {
+        fmt.Println(err)
+    }
     for _, link := range links {
         routes, _ := netlink.RouteList(link, netlink.FAMILY_V4)
         for _, route := range routes {
@@ -110,11 +122,17 @@ func routeAdd(dst string, gateway string, ifname string, src string) {
 }
 
 func linkSetUp(ifname string) {
-    link, _ := netlink.LinkByName(ifname)
+    link, err := netlink.LinkByName(ifname)
     netlink.LinkSetUp(link)
+    if err != nil {
+        fmt.Println(err)
+    }
 }
 
 func linkSetDown(ifname string) {
-    link, _ := netlink.LinkByName(ifname)
+    link, err := netlink.LinkByName(ifname)
     netlink.LinkSetDown(link)
+    if err != nil {
+        fmt.Println(err)
+    }
 }
