@@ -16,7 +16,7 @@ Usage:
 
 ## Maintainer
 
-Mingshen Sun `<sunmingshen@baidu.com>`
+  - Mingshen Sun `<mssun@mesalock-linux.org>` [@mssun](https://github.com/mssun)
 
 ## License
 
