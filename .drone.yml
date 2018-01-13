@@ -1,0 +1,10 @@
+pipeline:
+  build:
+    image: golang:1.8
+    commands:
+      - make
+  notify:
+    image: drillster/drone-email
+    secrets: [ plugin_host, plugin_username, plugin_password, plugin_from ]
+    when:
+      status: [ changed, failure ]
