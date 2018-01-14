@@ -1,5 +1,7 @@
 # Iproute2 for MesaLock Linux
 
+[![Build Status](https://ci.mesalock-linux.org/api/badges/mesalock-linux/giproute2/status.svg?branch=master)](https://ci.mesalock-linux.org/mesalock-linux/giproute2)
+
 An iproute2 utility written in Go. We provide basic ip related commands such as
 showing link infomation, setting link up and down, etc. Here is the usage:
 
